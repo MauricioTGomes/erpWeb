@@ -22,8 +22,10 @@
             },
             'pedido.valor_desconto': {
                 handler(valor) {
-                    var soma = formatForCalc(this.pedido.valor) - formatForCalc(valor);
-                    this.$set(this.pedido, 'valor_liquido', soma.formatMoney(2, ',', '.'));
+                    if (this.pedidoFaturar) {
+                        var soma = formatForCalc(this.pedido.valor) - formatForCalc(valor);
+                        this.$set(this.pedido, 'valor_liquido', soma.formatMoney(2, ',', '.'));
+                    }
                 }
             }
         },
@@ -120,7 +122,7 @@
                 });
 
                 self.$set(self, 'totalForm', soma.formatMoney(2, ',', '.'));
-                self.$set(self.pedido, 'valor', soma);
+                self.$set(self.pedido, 'valor', soma.formatMoney(2, ',', '.'));
                 self.$set(self.pedido, 'valor_liquido', soma.formatMoney(2, ',', '.'));
             },
 
@@ -221,7 +223,7 @@
                                 $('#modal-success-pedido').modal()
                                 self.$set(self, 'idPedodoImprimir', data.pedido.id);
                             } else {
-                                $('#modal-danger .text').text(data.msg)
+                                $('#modal-danger .text').text(data.message)
                                 $('#modal-danger').modal()
                             }
                         }
@@ -266,7 +268,6 @@
                 self.$set(self, 'pedido', self.pedidoSelecionado);
                 self.$set(self.pedido, 'valor', self.pedidoSelecionado.valor_total);
                 self.$set(self.pedido, 'desconto', self.pedidoSelecionado.valor_desconto);
-                self.$set(self, 'pedidoFaturar', self.pedidoSelecionado.faturado);
                 $.each(self.pedidoSelecionado.itens, function (index, item) {
                     self.$set(self.pedidoSelecionado.itens[index], 'nome', item.produto.nome);
                     self.$set(self.pedidoSelecionado.itens[index], 'id', item.produto_id);
@@ -392,8 +393,8 @@
                                     <div class="col-sm-4">
                                         <div class="form-group">
                                             <input class="form-control" type="text" id="vlrVenda"
-                                                   v-model="item.valor_total"
-                                                   v-money="item.valor_total" placeholder="Valor (R$)"/>
+                                                   v-model="item.valor_unitario"
+                                                   v-money="item.valor_unitario" placeholder="Valor (R$)"/>
                                         </div>
                                     </div>
 
@@ -475,8 +476,13 @@
                         <select name="selectPessoa" class="form-control" style="width : 100%"></select>
                     </div>
 
-                    <div class="col-xs-12 col-md-6" v-show="!pedido.faturado">
+                    <div class="col-xs-12 col-md-3">
                         <input name="faturar" v-model="pedidoFaturar" type="checkbox" value="0">Faturar pedido
+                    </div>
+                    <div class="col-xs-12 col-md-3"  v-show="mostraSelectPessoa">
+                        <a href="/pessoas/incluir" class="btn btn-effect-ripple btn-success" target="_blank">
+                            <i class="fa fa-plus"></i> Adicionar cliente
+                        </a>
                     </div>
                 </div>
                 <br>
@@ -495,8 +501,8 @@
                     <div class="row">
                         <div class="col-sm-4">
                             <div class="form-group">
-                                <input class="form-control" type="text" v-model="pedido.valor_liquido" v-money="pedido.valor_liquido"
-                                       placeholder="Valor pago(R$)"/>
+                                <input class="form-control" type="text" v-model="pedido.valor" v-money="pedido.valor"
+                                       placeholder="Valor total(R$)"/>
                             </div>
                         </div>
 
@@ -505,6 +511,13 @@
                                 <input class="form-control" type="text" v-money="pedido.valor_desconto"
                                        v-model="pedido.valor_desconto"
                                        placeholder="Desconto (R$)"/>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <input class="form-control" readonly="readonly" type="text" v-model="pedido.valor_liquido" v-money="pedido.valor_liquido"
+                                       placeholder="Valor pago(R$)"/>
                             </div>
                         </div>
                     </div>
@@ -571,7 +584,7 @@
                 <div v-show="!pedidoFaturar">
                     <div class="col-sm-12">
                         <div class="form-group">
-                            <textarea class="form-control" v-model="pedido.observacao" placeholder="Observações do pedido" :rows="7" type="text"></textarea>
+                            <textarea class="form-control" v-model="pedido.observacoes" placeholder="Observações do pedido" :rows="7" type="text"></textarea>
                         </div>
                     </div>                    
                 </div>

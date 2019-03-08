@@ -79,4 +79,11 @@ class Pedido extends Model {
 
 	}
 
+	public function buscaPedidos() {
+		$query = $this->newQuery();
+		$query->where('user_abertura_id', Auth::user()->id);
+		return $query->get();
+
+	}
+
 }

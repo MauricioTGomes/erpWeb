@@ -34,7 +34,6 @@
 
     <script>
         $(function () {
-            $('#dataTableSimples').DataTable();
             $('#dataTable').DataTable({
                 'paging': true,
                 'lengthChange': true,

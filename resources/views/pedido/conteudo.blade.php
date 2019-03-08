@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>Nome do software - Pedido</title>
+    <title>Men Store MS - Pedido</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="{{public_path('css/impressao_pdf.css')}}">
     <link rel="stylesheet" href="{{public_path('css/bootstrap.min.css')}}">
@@ -13,7 +13,7 @@
 </div>
 
 <div class="row">
-    <div class="col-xs-7"><b>Data de emissão: {{$pedido->created_at}}</b></div>
+    <div class="col-xs-7"><b>Data e hora de emissão: {{(new \Carbon\Carbon($pedido->created_at))->format('d/m/Y h:m:s')}}</b></div>
     <div class="col-xs-5 text-right">Vendedor: {{auth()->user()->name}}</div>
 </div>
 
@@ -38,6 +38,9 @@
 </div>
 
 @if($pedido->itens->count() > 0)
+    @php
+        $total = 0;
+    @endphp
     <hr>
     <div class="row">
         <div class="col-xs-12">
@@ -58,6 +61,9 @@
                 <tbody>
 
                 @foreach($pedido->itens as $index => $item)
+                    @php
+                        $total += $item->valor_total;
+                    @endphp
                     <tr>
                         <td class="text-center">{{$index + 1 }}</td>
                         <td>{{$item->produto->cod_barras}}</td>
@@ -72,7 +78,7 @@
                 <tr>
                     <td colspan="4"></td>
                     <td class="text-center" colspan="2"><b>Totalizador</b></td>
-                    <td class="text-center"><b>R$ {{formatValueForUser($pedido->valor_liquido)}}</b></td>
+                    <td class="text-center"><b>R$ {{formatValueForUser($total)}}</b></td>
                 </tr>
 
                 </tbody>

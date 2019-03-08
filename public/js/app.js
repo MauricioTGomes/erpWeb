@@ -33882,6 +33882,7 @@ $(document).ready(function ($) {
         }
     });
 
+    $('.input-datepicker').mask("00/00/0000", { clearIfNotMatch: true });
     $('.input-date-time-picker').mask("00/00/0000 00:00:00", { clearIfNotMatch: true });
     $('.input-date').mask("00/00/0000", { clearIfNotMatch: true });
     $(".input-ano").mask("0000");
@@ -61731,8 +61732,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         'pedido.valor_desconto': {
             handler: function handler(valor) {
-                var soma = formatForCalc(this.pedido.valor) - formatForCalc(valor);
-                this.$set(this.pedido, 'valor_liquido', soma.formatMoney(2, ',', '.'));
+                if (this.pedidoFaturar) {
+                    var soma = formatForCalc(this.pedido.valor) - formatForCalc(valor);
+                    this.$set(this.pedido, 'valor_liquido', soma.formatMoney(2, ',', '.'));
+                }
             }
         }
     },
@@ -61825,7 +61828,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             });
 
             self.$set(self, 'totalForm', soma.formatMoney(2, ',', '.'));
-            self.$set(self.pedido, 'valor', soma);
+            self.$set(self.pedido, 'valor', soma.formatMoney(2, ',', '.'));
             self.$set(self.pedido, 'valor_liquido', soma.formatMoney(2, ',', '.'));
         },
         verificaItemCadastrado: function verificaItemCadastrado(_item) {
@@ -61922,7 +61925,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                             $('#modal-success-pedido').modal();
                             self.$set(self, 'idPedodoImprimir', data.pedido.id);
                         } else {
-                            $('#modal-danger .text').text(data.msg);
+                            $('#modal-danger .text').text(data.message);
                             $('#modal-danger').modal();
                         }
                     }
@@ -61965,7 +61968,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             self.$set(self, 'pedido', self.pedidoSelecionado);
             self.$set(self.pedido, 'valor', self.pedidoSelecionado.valor_total);
             self.$set(self.pedido, 'desconto', self.pedidoSelecionado.valor_desconto);
-            self.$set(self, 'pedidoFaturar', self.pedidoSelecionado.faturado);
             $.each(self.pedidoSelecionado.itens, function (index, item) {
                 self.$set(self.pedidoSelecionado.itens[index], 'nome', item.produto.nome);
                 self.$set(self.pedidoSelecionado.itens[index], 'id', item.produto_id);
@@ -62228,14 +62230,14 @@ var render = function() {
                           {
                             name: "model",
                             rawName: "v-model",
-                            value: _vm.item.valor_total,
-                            expression: "item.valor_total"
+                            value: _vm.item.valor_unitario,
+                            expression: "item.valor_unitario"
                           },
                           {
                             name: "money",
                             rawName: "v-money",
-                            value: _vm.item.valor_total,
-                            expression: "item.valor_total"
+                            value: _vm.item.valor_unitario,
+                            expression: "item.valor_unitario"
                           }
                         ],
                         staticClass: "form-control",
@@ -62244,7 +62246,7 @@ var render = function() {
                           id: "vlrVenda",
                           placeholder: "Valor (R$)"
                         },
-                        domProps: { value: _vm.item.valor_total },
+                        domProps: { value: _vm.item.valor_unitario },
                         on: {
                           input: function($event) {
                             if ($event.target.composing) {
@@ -62252,7 +62254,7 @@ var render = function() {
                             }
                             _vm.$set(
                               _vm.item,
-                              "valor_total",
+                              "valor_unitario",
                               $event.target.value
                             )
                           }
@@ -62456,6 +62458,47 @@ var render = function() {
             ]
           ),
           _vm._v(" "),
+          _c("div", { staticClass: "col-xs-12 col-md-3" }, [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.pedidoFaturar,
+                  expression: "pedidoFaturar"
+                }
+              ],
+              attrs: { name: "faturar", type: "checkbox", value: "0" },
+              domProps: {
+                checked: Array.isArray(_vm.pedidoFaturar)
+                  ? _vm._i(_vm.pedidoFaturar, "0") > -1
+                  : _vm.pedidoFaturar
+              },
+              on: {
+                change: function($event) {
+                  var $$a = _vm.pedidoFaturar,
+                    $$el = $event.target,
+                    $$c = $$el.checked ? true : false
+                  if (Array.isArray($$a)) {
+                    var $$v = "0",
+                      $$i = _vm._i($$a, $$v)
+                    if ($$el.checked) {
+                      $$i < 0 && (_vm.pedidoFaturar = $$a.concat([$$v]))
+                    } else {
+                      $$i > -1 &&
+                        (_vm.pedidoFaturar = $$a
+                          .slice(0, $$i)
+                          .concat($$a.slice($$i + 1)))
+                    }
+                  } else {
+                    _vm.pedidoFaturar = $$c
+                  }
+                }
+              }
+            }),
+            _vm._v("Faturar pedido\n                    ")
+          ]),
+          _vm._v(" "),
           _c(
             "div",
             {
@@ -62463,52 +62506,13 @@ var render = function() {
                 {
                   name: "show",
                   rawName: "v-show",
-                  value: !_vm.pedido.faturado,
-                  expression: "!pedido.faturado"
+                  value: _vm.mostraSelectPessoa,
+                  expression: "mostraSelectPessoa"
                 }
               ],
-              staticClass: "col-xs-12 col-md-6"
+              staticClass: "col-xs-12 col-md-3"
             },
-            [
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.pedidoFaturar,
-                    expression: "pedidoFaturar"
-                  }
-                ],
-                attrs: { name: "faturar", type: "checkbox", value: "0" },
-                domProps: {
-                  checked: Array.isArray(_vm.pedidoFaturar)
-                    ? _vm._i(_vm.pedidoFaturar, "0") > -1
-                    : _vm.pedidoFaturar
-                },
-                on: {
-                  change: function($event) {
-                    var $$a = _vm.pedidoFaturar,
-                      $$el = $event.target,
-                      $$c = $$el.checked ? true : false
-                    if (Array.isArray($$a)) {
-                      var $$v = "0",
-                        $$i = _vm._i($$a, $$v)
-                      if ($$el.checked) {
-                        $$i < 0 && (_vm.pedidoFaturar = $$a.concat([$$v]))
-                      } else {
-                        $$i > -1 &&
-                          (_vm.pedidoFaturar = $$a
-                            .slice(0, $$i)
-                            .concat($$a.slice($$i + 1)))
-                      }
-                    } else {
-                      _vm.pedidoFaturar = $$c
-                    }
-                  }
-                }
-              }),
-              _vm._v("Faturar pedido\n                    ")
-            ]
+            [_vm._m(4)]
           )
         ]),
         _vm._v(" "),
@@ -62586,29 +62590,25 @@ var render = function() {
                       {
                         name: "model",
                         rawName: "v-model",
-                        value: _vm.pedido.valor_liquido,
-                        expression: "pedido.valor_liquido"
+                        value: _vm.pedido.valor,
+                        expression: "pedido.valor"
                       },
                       {
                         name: "money",
                         rawName: "v-money",
-                        value: _vm.pedido.valor_liquido,
-                        expression: "pedido.valor_liquido"
+                        value: _vm.pedido.valor,
+                        expression: "pedido.valor"
                       }
                     ],
                     staticClass: "form-control",
-                    attrs: { type: "text", placeholder: "Valor pago(R$)" },
-                    domProps: { value: _vm.pedido.valor_liquido },
+                    attrs: { type: "text", placeholder: "Valor total(R$)" },
+                    domProps: { value: _vm.pedido.valor },
                     on: {
                       input: function($event) {
                         if ($event.target.composing) {
                           return
                         }
-                        _vm.$set(
-                          _vm.pedido,
-                          "valor_liquido",
-                          $event.target.value
-                        )
+                        _vm.$set(_vm.pedido, "valor", $event.target.value)
                       }
                     }
                   })
@@ -62643,6 +62643,46 @@ var render = function() {
                         _vm.$set(
                           _vm.pedido,
                           "valor_desconto",
+                          $event.target.value
+                        )
+                      }
+                    }
+                  })
+                ])
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "col-sm-4" }, [
+                _c("div", { staticClass: "form-group" }, [
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.pedido.valor_liquido,
+                        expression: "pedido.valor_liquido"
+                      },
+                      {
+                        name: "money",
+                        rawName: "v-money",
+                        value: _vm.pedido.valor_liquido,
+                        expression: "pedido.valor_liquido"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    attrs: {
+                      readonly: "readonly",
+                      type: "text",
+                      placeholder: "Valor pago(R$)"
+                    },
+                    domProps: { value: _vm.pedido.valor_liquido },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(
+                          _vm.pedido,
+                          "valor_liquido",
                           $event.target.value
                         )
                       }
@@ -62806,7 +62846,7 @@ var render = function() {
                 attrs: { id: "lista-parcelas" }
               },
               [
-                _vm._m(4),
+                _vm._m(5),
                 _vm._v(" "),
                 _vm._l(_vm.parcelas, function(parcela, index) {
                   return _c("tbody", [
@@ -62900,8 +62940,8 @@ var render = function() {
                     {
                       name: "model",
                       rawName: "v-model",
-                      value: _vm.pedido.observacao,
-                      expression: "pedido.observacao"
+                      value: _vm.pedido.observacoes,
+                      expression: "pedido.observacoes"
                     }
                   ],
                   staticClass: "form-control",
@@ -62910,13 +62950,13 @@ var render = function() {
                     rows: 7,
                     type: "text"
                   },
-                  domProps: { value: _vm.pedido.observacao },
+                  domProps: { value: _vm.pedido.observacoes },
                   on: {
                     input: function($event) {
                       if ($event.target.composing) {
                         return
                       }
-                      _vm.$set(_vm.pedido, "observacao", $event.target.value)
+                      _vm.$set(_vm.pedido, "observacoes", $event.target.value)
                     }
                   }
                 })
@@ -62970,9 +63010,9 @@ var render = function() {
         _vm._v(" "),
         _c("div", { staticClass: "modal-dialog" }, [
           _c("div", { staticClass: "modal-content" }, [
-            _vm._m(5),
-            _vm._v(" "),
             _vm._m(6),
+            _vm._v(" "),
+            _vm._m(7),
             _vm._v(" "),
             _c("div", { staticClass: "modal-footer" }, [
               _c(
@@ -63106,6 +63146,22 @@ var staticRenderFns = [
         )
       ])
     ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "a",
+      {
+        staticClass: "btn btn-effect-ripple btn-success",
+        attrs: { href: "/pessoas/incluir", target: "_blank" }
+      },
+      [
+        _c("i", { staticClass: "fa fa-plus" }),
+        _vm._v(" Adicionar cliente\n                        ")
+      ]
+    )
   },
   function() {
     var _vm = this
@@ -63675,9 +63731,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         alterar: function alterar(conta) {
             if (this.tipo == 'R') {
-                window.location.href = 'receber/alterar/' + conta.id;
+                window.location.href = '/contas/receber/alterar/' + conta.id;
             } else {
-                window.location.href = 'pagar/alterar/' + conta.id;
+                window.location.href = '/contas/pagar/alterar/' + conta.id;
             }
         },
         abreModal: function abreModal(contaEliminar) {
@@ -63829,6 +63885,10 @@ var render = function() {
                                   : conta.pessoa.fantasia
                               )
                             )
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { attrs: { align: "center" } }, [
+                            _vm._v(_vm._s(conta.vlr_total))
                           ]),
                           _vm._v(" "),
                           _c("td", { attrs: { align: "center" } }, [
@@ -64005,6 +64065,8 @@ var staticRenderFns = [
         _c("th", { attrs: { width: "10%" } }, [_vm._v("Data emissão")]),
         _vm._v(" "),
         _c("th", { attrs: { width: "20%" } }, [_vm._v("Nome")]),
+        _vm._v(" "),
+        _c("th", { attrs: { width: "15%" } }, [_vm._v("Valor total(R$)")]),
         _vm._v(" "),
         _c("th", { attrs: { width: "15%" } }, [_vm._v("Valor restante(R$)")]),
         _vm._v(" "),

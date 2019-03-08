@@ -60,6 +60,7 @@ $(document).ready(function ($) {
         }
     });
 
+    $('.input-datepicker').mask("00/00/0000", {clearIfNotMatch: true});
     $('.input-date-time-picker').mask("00/00/0000 00:00:00", {clearIfNotMatch: true});
     $('.input-date').mask("00/00/0000", {clearIfNotMatch: true});
     $(".input-ano").mask("0000");

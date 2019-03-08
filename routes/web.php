@@ -17,12 +17,15 @@ Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout');
 
 Route::get('/', ['as' => 'index', 'uses' => 'IndexController@index']);
 
-Route::group(['where'                 => ['id'                 => '[0-9]+', 'middleware'                 => 'auth']], function () {
-		Route::group(['prefix'              => 'auth'], function () {
-				Route::get('/register', ['as'     => 'cadastrar.usuario', 'uses'     => 'IndexController@register']);
-				Route::get('/alterar/{id}', ['as' => 'alterar.usuario', 'uses' => 'IndexController@alterar']);
-				Route::post('/register', ['as'    => 'gravar.usuario', 'uses'    => 'IndexController@create']);
-				Route::post('/update/{id}', ['as' => 'update.usuario', 'uses' => 'IndexController@update']);
+Route::group(['where'                     => ['id'                     => '[0-9]+', 'middleware'                     => 'auth']], function () {
+		Route::group(['prefix'                  => 'auth'], function () {
+				Route::get('/register', ['as'         => 'cadastrar.usuario', 'uses'         => 'IndexController@register']);
+				Route::get('/listar', ['as'           => 'listar.usuario', 'uses'           => 'IndexController@listar']);
+				Route::get('/alterar/{id}', ['as'     => 'alterar.usuario', 'uses'     => 'IndexController@alterar']);
+				Route::post('/register', ['as'        => 'gravar.usuario', 'uses'        => 'IndexController@create']);
+				Route::post('/update/{id}', ['as'     => 'update.usuario', 'uses'     => 'IndexController@update']);
+				Route::post('/deletar/{id}', ['as'    => 'deletar.usuario', 'uses'    => 'IndexController@deletaUser']);
+				Route::get('/listar/datatable', ['as' => 'listar.datatable', 'uses' => 'IndexController@datatableAjax']);
 			});
 
 		Route::group(['prefix'                    => 'pessoas'], function () {
@@ -77,6 +80,9 @@ Route::group(['where'                 => ['id'                 => '[0-9]+', 'mid
 				Route::post('/buscaContas', ['as'  => 'contas.buscar', 'uses'  => 'ContaController@buscaContas']);
 				Route::post('/gravar', ['as'       => 'contas.gravar', 'uses'       => 'ContaController@gravar']);
 				Route::post('/update/{id}', ['as'  => 'contas.update', 'uses'  => 'ContaController@update']);
+
+				Route::post('/imprimir', ['as'       => 'relatorio.conta.contas', 'uses'       => 'ContaController@processaRelatorio']);
+				Route::get('/relatorioContas', ['as' => 'relatorio.contas', 'uses' => 'ContaController@getFormRelatorio']);
 
 				Route::group(['prefix'                => 'parcelas/'], function () {
 						Route::post('/buscaParcelas', ['as' => 'contas.buscar', 'uses' => 'ParcelaController@buscaParcelas']);

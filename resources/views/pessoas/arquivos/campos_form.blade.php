@@ -121,7 +121,7 @@
         <div class="row">
             <div class="col-sm-4">
                 <div class="form-group">
-                    <label for="fone">Telefone(s) <i class="text-danger" title="Campo obrigatório">*</i></label>
+                    <label for="fone">Telefone <i class="text-danger" title="Campo obrigatório">*</i></label>
                     {!! Form::text('fone', null, ['class'=>'input-fone form-control']) !!}
                 </div>
             </div>

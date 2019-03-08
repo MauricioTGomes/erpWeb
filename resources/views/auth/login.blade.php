@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Nome do software | Entrar</title>
+    <title>Men Store MS | Entrar</title>
 
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="stylesheet" href="{{ asset('layout/bower_components/bootstrap/dist/css/bootstrap.min.css') }}">
@@ -22,7 +22,7 @@
 <body class="hold-transition login-page">
 <div class="login-box">
     <div class="login-logo">
-        <a href="#"><b>Nome do </b>SOFTWARE</a>
+        <a href="#"><b>Men Store </b>MS</a>
     </div>
     <!-- /.login-logo -->
     <div class="login-box-body">
@@ -64,7 +64,6 @@
             </div>
         </div>
         {!! Form::close() !!}
-        <a href="#">Esqueci minha senha</a><br>
 
     </div>
 </div>

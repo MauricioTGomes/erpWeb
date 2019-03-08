@@ -56,7 +56,7 @@ class PedidoController extends Controller {
 					'faturado'           => $input['faturado'] == 'true'?'1':'0',
 					'data_faturamento'   => $input['faturado'] == 'true'?date('d/m/Y'):null,
 					'numero'             => count($this->pedidoModel->all())+1,
-					'observacoes'        => isset($input['pedido']['observacao'])?$input['pedido']['observacao']:''
+					'observacoe'         => isset($input['pedido']['observacoes'])?$input['pedido']['observacoes']:''
 				]);
 
 			foreach ($input['itens'] as $item) {
@@ -113,7 +113,7 @@ class PedidoController extends Controller {
 			$pedidoAnterior = $this->pedidoModel->find($id);
 			$this->controlaEstoque->verificaAlteracaoEstoque($request->input('itens'), $pedidoAnterior, $pedidoAnterior->itens);
 
-			$this->controlaEstoque->controlaMovimentacaoFianceira($pedidoAnterior, $input, true);
+			$this->controlaEstoque->controlaMovimentacaoFianceira($pedidoAnterior, $input);
 
 			$pedidoAnterior->user_fechamento_id = $input['faturado']?Auth::user()->id:null;
 			$pedidoAnterior->valor_total        = $input['pedido']['valor'];
@@ -124,7 +124,7 @@ class PedidoController extends Controller {
 			$pedidoAnterior->data_faturamento   = $input['faturado'] == 'true'?date('d/m/Y'):null;
 			$pedidoAnterior->update($pedidoAnterior->toArray());
 			DB::commit();
-			return response()->json(['erro' => 0, 'msg' => 'Sucesso ao alterar pedido!']);
+			return response()->json(['erro' => 0, 'msg' => 'Sucesso ao alterar pedido, deseja imprimir?', 'pedido' => $pedidoAnterior]);
 		} catch (\Exception $e) {
 			DB::rollback();
 			return response()->json(['erro' => 1, 'msg' => $e->getMessage(), 'pedido' => $pedidoAnterior]);
@@ -144,6 +144,10 @@ class PedidoController extends Controller {
 
 	public function getFormAlterar($id) {
 		$pedido = $this->pedidoModel->newQuery()->where('id', $id)->with('itens.produto', 'conta.parcelas')->get()->first();
+		if ($pedido->faturado) {
+			throw new Exception("Pedido não pode ser alterado pois já foi faturado!");
+
+		}
 		SEOTools::setTitle('Alterando pedido de número: '.$pedido->numero);
 		SEOTools::setDescription('Cliente: '.$pedido->pessoa->nomeCompleto());
 		return view('pedido/adicionar', compact('pedido'));
@@ -156,29 +160,37 @@ class PedidoController extends Controller {
 				return $registro->numero;
 			})
 			->editColumn('cliente', function ($registro) {
+				if (is_null($registro->pessoa)) {
+					return 'Não informado';
+				}
 				return $registro->pessoa->nomeCompleto();
 			})
 			->editColumn('qtd_produtos', function ($registro) {
 				return $registro->qtd_produtos;
 			})
-			->editColumn('status', function ($registro) {
+			->addColumn('status', function ($registro) {
 				if ($registro->faturado) {
-					return 'Faturado';
+					return 'FATURADO';
 				}
-				return 'Não faturado';
+				return 'CONDICIONAL';
 			})
 			->editColumn('valor_venda', function ($registro) {
-				return $registro->valor_liquido;
+				return formatValueForUser($registro->valor_liquido);
 			})
 			->addColumn('action', function ($registro) {
 				$string = '<a a-href="/pedidos/deletar/'.$registro->id.'" title="Excluir"
                            class="btn-confirm-operation btn btn-effect-ripple btn-xs btn-danger"
-                           data-original-title="Deletar"><i class="fa fa-times"></i></a>';
+                           data-original-title="Deletar"><i class="fa fa-times"></i></a>
 
-				if (is_null($registro->conta) || is_null($registro->conta->parcelasPagas->first()) || (!$registro->faturado && !is_null($registro->conta))) {
+                           <a href="/pedidos/imprimir/'.$registro->id.'" title="Imprimir"
+                           class="btn btn-effect-ripple btn-xs btn-info"
+                           data-original-title="Imprimir"><i class="fa fa-print"></i></a>
+                           ';
+
+				if (!$registro->faturado) {
 					return '<a href="/pedidos/alterar/'.$registro->id.'" title="Alterar"
                            class="btn btn-effect-ripple btn-xs btn-success"
-                           data-original-title="Alterar"><i class="fa fa-pencil"></i></a>'.$string;
+                           data-original-title="Alterar"><i class="fa fa-pencil"></i></a> '.$string;
 				}
 
 				return $string;
@@ -188,12 +200,12 @@ class PedidoController extends Controller {
 
 	public function atualizaValoresPedido(Request $request) {
 		$item       = $request->input('item');
-		$desconto   = isset($item['valor_desconto'])?$item['valor_desconto']:0.00;
+		$desconto   = isset($item['valor_desconto'])?formatValueForMysql($item['valor_desconto']):0.00;
 		$quantidade = isset($item['quantidade'])?$item['quantidade']:1;
 
-		$valorTotal = (formatValueForMysql($item['valor_total'])-$desconto)*$quantidade;
+		$valorTotal = (formatValueForMysql($item['valor_unitario'])*$quantidade)-$desconto;
 
-		$item['valor_total']    = $valorTotal;
+		$item['valor_total']    = formatValueForUser($valorTotal);
 		$item['quantidade']     = $quantidade;
 		$item['valor_desconto'] = $desconto;
 

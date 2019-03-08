@@ -4,6 +4,7 @@
             <h5 class="box-title">Dados</h5>
         </div>
         <div class="box-body">
+        @if(!isset($conta))
             <div class="row">
                 <div class="col-sm-6">
                     <label for="pessoa_id">Pessoa<i class="text-danger" title="Campo obrigatório">*</i></label>
@@ -14,6 +15,9 @@
                     </select>
                 </div>
             </div>
+            @else
+            <input type="hidden" name="pessoa_id" value="{{ $conta->pessoa_id }}">
+            @endif
 
             <div class="row">
                 <div class="col-sm-4">

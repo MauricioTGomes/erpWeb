@@ -39,7 +39,7 @@
         @endif
 
         @if(auth()->user()->tipo == 'gerente')
-        <label class="form-group has-feedback col-xs-4">
+        <label class="form-group has-feedback col-xs-12">
             <span class="block input-icon input-icon-right">
             <select class="form-control select2" name="tipo">
             <option {{ isset($user) && $user->tipo == 'vendedor' ? 'selected' : ''}} value="vendedor">Vendedor</option>

@@ -36,7 +36,7 @@ class PessoaController extends Controller {
 	public function deletar($id) {
 		try {
 			DB::beginTransaction();
-            $pessoa = $this->pessoaModel->find($id);
+			$pessoa = $this->pessoaModel->find($id);
 			if (!is_null($pessoa->pedidos->first()) || !is_null($pessoa->contas->first())) {
 				throw new Exception("pessoa com movimentação financeira, cancele e apague as contas e vendas antes de continuar");
 			}
@@ -74,23 +74,23 @@ class PessoaController extends Controller {
 		return view('pessoas/adicionar', compact('cidades'));
 	}
 
-    public function buscaPessoa(Request $request) {
+	public function buscaPessoa(Request $request) {
 
-        if ($request->input('tipo') == 'unico') {
-            $pessoa = $this->pessoaModel->find($request->input('id'));
-            return response()->json($pessoa);
-        }
+		if ($request->input('tipo') == 'unico') {
+			$pessoa = $this->pessoaModel->find($request->input('id'));
+			return response()->json($pessoa);
+		}
 
-        $pessoas = $this->pessoaModel->buscaPessoasPesquisa($request->input('term'));
-        $arrayPessoa = [];
-        foreach ($pessoas as $pessoa) {
-            array_push($arrayPessoa, ['id'=>$pessoa->id, 'text'=> $pessoa->nomeCompleto() . ' - ' . $pessoa->cpfCnpj()]);
-        }
-        return response()->json(['pessoas' => $arrayPessoa]);
-    }
+		$pessoas     = $this->pessoaModel->buscaPessoasPesquisa($request->input('term'));
+		$arrayPessoa = [];
+		foreach ($pessoas as $pessoa) {
+			array_push($arrayPessoa, ['id' => $pessoa->id, 'text' => $pessoa->nomeCompleto().' - '.$pessoa->cpfCnpj()]);
+		}
+		return response()->json(['pessoas' => $arrayPessoa]);
+	}
 
 	public function getFormAlterar($id, Cidade $cidade) {
-		SEOTools::setTitle('Alterar pessoas');
+		SEOTools::setTitle('Alterar pessoa');
 		$pessoa  = $this->pessoaModel->find($id);
 		$cidades = $cidade->all();
 		return view('pessoas/editar', compact('cidades', 'pessoa'));

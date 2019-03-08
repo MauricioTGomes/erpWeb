@@ -33,6 +33,12 @@ class MovimentacaoController extends Controller {
 			->editColumn('descricao', function ($registro) {
 				return $registro->descricao;
 			})
+			->editColumn('valor_total', function ($registro) {
+				return formatValueForUser($registro->valor_total);
+			})
+			->editColumn('valor_desconto', function ($registro) {
+				return formatValueForUser($registro->valor_desconto);
+			})
 			->editColumn('valor', function ($registro) {
 				return formatValueForUser($registro->valor_pago);
 			})
@@ -69,7 +75,12 @@ class MovimentacaoController extends Controller {
 			if (!is_null($movi->parcela) && $movi->parcela->conta->tipo_operacao == 'R') {
 				$parametros['contasReceber'] += $movi->valor_pago;
 			}
-			$parametros['total'] += $movi->valor_total;
+
+			if ($movi->tipo == 'R' && $movi->estornado == 0) {
+				$parametros['total'] += $movi->valor_pago;
+			} else {
+				$parametros['total'] -= $movi->valor_pago;
+			}
 		}
 		return view('caixa/listar', compact('parametros'));
 	}
@@ -90,6 +101,7 @@ class MovimentacaoController extends Controller {
 			if ($input['valor'] == '0,00') {
 				throw new Exception("Valor não pode ser menor ou igual a zero.");
 			}
+			$input['estornado']   = $input['operacao'];
 			$input['user_id']     = Auth::user()->id;
 			$input['valor_pago']  = $input['valor'];
 			$input['valor_total'] = $input['valor'];

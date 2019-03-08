@@ -32,7 +32,7 @@
                 @endphp
                     <tr>
                         <td class="text-center">{{$pedido->numero }}</td>
-                        <td>{{$pedido->pessoa->nomeCompleto()}}</td>
+                        <td>{{!is_null($pedido->pessoa) ? $pedido->pessoa->nomeCompleto() : "Cliente não informado"}}</td>
                         <td class="text-center">{{ formatValueForUser($pedido->valor_total) }}</td>
                         <td class="text-center">{{ formatValueForUser($pedido->valor_desconto) }}</td>
                         <td class="text-center">{{formatValueForUser($pedido->valor_liquido)}}</td>

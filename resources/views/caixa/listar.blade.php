@@ -21,9 +21,11 @@
                         <table id="dataTable" class="table table-bordered table-striped dataTable" role="grid">
                             <thead>
                             <tr>
-                                <th width="20%">Data e hora</th>
-                                <th width="30%">Descrição</th>
-                                <th width="20%">Valor</th>
+                                <th width="15%">Data e hora</th>
+                                <th width="25%">Descrição</th>
+                                <th width="10%">Valor total (R$)</th>
+                                <th width="10%">Valor desconto (R$)</th>
+                                <th width="10%">Valor final (R$)</th>
                                 <th width="20%">Usuário</th>
                             </tr>
                             </thead>
@@ -95,6 +97,8 @@
                 'columns': [
                     {data: 'data', name: 'data'},
                     {data: 'descricao', name: 'descricao'},
+                    {data: 'valor_total', name: 'valor_total'},
+                    {data: 'valor_desconto', name: 'valor_desconto'},
                     {data: 'valor', name: 'valor'},
                     {data: 'user', name: 'user'}
                 ],

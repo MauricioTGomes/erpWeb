@@ -56,9 +56,9 @@
 
             alterar(conta) {
                 if (this.tipo == 'R') {
-                    window.location.href = 'receber/alterar/' + conta.id;
+                    window.location.href = '/contas/receber/alterar/' + conta.id;
                 } else {
-                    window.location.href = 'pagar/alterar/' + conta.id;
+                    window.location.href = '/contas/pagar/alterar/' + conta.id;
                 }
             },
 
@@ -162,6 +162,7 @@
                                     <th width="10%">Título</th>
                                     <th width="10%">Data emissão</th>
                                     <th width="20%">Nome</th>
+                                    <th width="15%">Valor total(R$)</th>
                                     <th width="15%">Valor restante(R$)</th>
                                     <th width="15%">Ações</th>
                                 </tr>
@@ -171,6 +172,7 @@
                                     <td>{{ conta.titulo }}</td>
                                     <td align="center">{{ conta.data_emissao }}</td>
                                     <td align="center">{{ conta.pessoa.nome != null ? conta.pessoa.nome : conta.pessoa.fantasia }}</td>
+                                    <td align="center">{{ conta.vlr_total }}</td>
                                     <td align="center">{{ conta.vlr_restante }}</td>
                                     <td>
                                         <a @click="estornarParcelas(conta)" title="Estornar parcelas"

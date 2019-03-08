@@ -73,10 +73,7 @@ class Pessoa extends Model {
 		$query->where(function ($q) use ($parametro) {
 				$q->where('ativo', '1')
 					->where('nome', 'like', "%$parametro%")
-				->orWhere('razao_social', 'like', "%$parametro%")
-					->orWhere('fantasia', 'like', "%$parametro%")
-				->orWhere('cnpj', 'like', "%$parametro%")
-					->orWhere('cpf', 'like', "%$parametro%");
+				->orWhere('cpf', 'like', "%$parametro%");
 			});
 
 		return $query->paginate(10);

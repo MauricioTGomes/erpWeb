@@ -4,6 +4,8 @@ namespace App;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Webpatser\Uuid\Uuid;
 
 class Conta extends Model {
 
@@ -23,16 +25,25 @@ class Conta extends Model {
 
 	protected $table = 'contas_receber_pagar';
 
+	public function setTituloAttribute($value) {
+		if ($value == '' || $value == null) {
+			return $this->attributes['titulo'] = strtoupper(substr(Uuid::generate(), 0, 7));
+		}
+		return $this->attributes['titulo'] = $value;
+	}
+
 	public function setVlrTotalAttribute($value) {
-		return $this->attributes['vlr_total'] = formatValueForMysql($value);
+		if (str_contains($value, ',')) {
+			return $this->attributes['vlr_total'] = formatValueForMysql($value);
+		}
+		return $this->attributes['vlr_total'] = $value;
 	}
 
 	public function setVlrRestanteAttribute($value) {
-		return $this->attributes['vlr_restante'] = formatValueForMysql($value);
-	}
-
-	public function getVlrRestanteAttribute($value) {
-		return $this->attributes['vlr_restante'] = formatValueForUser($value);
+		if (str_contains($value, ',')) {
+			return $this->attributes['vlr_restante'] = formatValueForMysql($value);
+		}
+		return $this->attributes['vlr_restante'] = $value;
 	}
 
 	public function pessoa() {
@@ -51,6 +62,11 @@ class Conta extends Model {
 		return $this->hasMany(Parcela::class )->where('baixada', '1');
 	}
 
+	public function getDataEmissaoAttribute($value) {
+		return (new Carbon($value))->format('d/m/Y');
+
+	}
+
 	public function setDataEmissaoAttribute($value) {
 		if (strlen($value) > 0) {
 			try {
@@ -60,6 +76,44 @@ class Conta extends Model {
 			}
 		} else {
 			return null;
+		}
+	}
+
+	public function getRelatorioReceberPagar($atraso, $tipo, $pessoaId, $vencimentoInicial, $vencimentoFinal, $emissaoInicial, $emissaoFinal, $pessoaAtivoInativo, $dataBase) {
+		$query = $this->newQuery();
+		$query
+			->join('parcelas_receber_pagar', 'parcelas_receber_pagar.conta_id', '=', 'contas_receber_pagar.id')
+			->join('pessoas', 'pessoas.id', '=', 'contas_receber_pagar.pessoa_id')
+			->where('contas_receber_pagar.tipo_operacao', $tipo)
+			->with('pessoa')
+			->with(['parcelas' => function ($query) use ($vencimentoInicial, $vencimentoFinal, $atraso, $dataBase) {
+					$query->where('baixada', '=', DB::raw("0"));
+					if (!is_null($atraso)) {
+						$query->where(DB::raw('DATE (parcelas_receber_pagar.data_vencimento)'), '<', DB::raw("'$dataBase'"));
+					}
+					if (!is_null($vencimentoInicial) && !is_null($vencimentoFinal)) {
+						$query->where(DB::raw('DATE (parcelas_receber_pagar.data_vencimento)'), '>=', DB::raw("'$vencimentoInicial'"));
+						$query->where(DB::raw('DATE (parcelas_receber_pagar.data_vencimento)'), '<=', DB::raw("'$vencimentoFinal'"));
+					}
+				}])
+			->select(DB::raw("contas_receber_pagar.*, CONCAT(if(pessoas.nome is null,'',pessoas.nome), if(pessoas.razao_social is null,'',pessoas.razao_social)) as nomePessoa, pessoas.id as idPessoa"))
+			->groupBy('contas_receber_pagar.id')
+			->orderBy('nomePessoa', 'asc')
+			->orderBy('idPessoa', 'asc');
+
+		if ($pessoaAtivoInativo != '') {
+			$query->where('pessoas.ativo', $pessoaAtivoInativo);
+		}
+
+		if (!is_null($emissaoInicial) && !is_null($emissaoFinal)) {
+			$query->where(DB::raw('DATE (contas_receber_pagar.created_at)'), '>=', DB::raw("'$emissaoInicial'"));
+			$query->where(DB::raw('DATE (contas_receber_pagar.created_at)'), '<=', DB::raw("'$emissaoFinal'"));
+		}
+
+		if ($pessoaId == null) {
+			return $query->get();
+		} else {
+			return $query->where('pessoa_id', $pessoaId)->get();
 		}
 	}
 

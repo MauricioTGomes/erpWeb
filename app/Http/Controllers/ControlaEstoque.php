@@ -85,13 +85,15 @@ class ControlaEstoque {
 
 	private function controlaFormaPagPedido($pedido, $input) {
 		if ($input['formaPagamento'] == 'VISTA') {
+			$descricaoNome = is_null($pedido->pessoa)?' cliente não informado.':" para cliente ".$pedido->pessoa->nomeCompleto();
+
 			$this->moviCaixaModel->create([
 					'pedido_id'      => $pedido->id,
 					'user_id'        => Auth::user()->id,
 					'valor_total'    => $pedido->valor_total,
 					'valor_desconto' => $pedido->valor_desconto,
 					'valor_pago'     => $pedido->valor_liquido,
-					'descricao'      => "Lançamento pedido de número: ".$pedido->numero." para cliente ".$pedido->pessoa->nomeCompleto(),
+					'descricao'      => "Lançamento pedido de número: ".$pedido->numero.$descricaoNome,
 					'estornado'      => '0'
 				]);
 		} else {
@@ -129,12 +131,13 @@ class ControlaEstoque {
 				$movimentação            = $pedido->movimentacaoCaixa->first();
 				$movimentação->pedido_id = null;
 				$movimentação->update($movimentação->toArray());
+				$descricaoNome = is_null($pedido->pessoa)?' cliente não informado.':" para cliente ".$pedido->pessoa->nomeCompleto();
 				$this->moviCaixaModel->create([
 						'user_id'        => Auth::user()->id,
 						'valor_total'    => $movimentação->valor_total,
 						'valor_desconto' => $movimentação->valor_desconto,
 						'valor_pago'     => $movimentação->valor_pago,
-						'descricao'      => "Estorno pedido de número: ".$pedido->numero." para cliente ".$pedido->pessoa->nomeCompleto(),
+						'descricao'      => "Estorno pedido de número: ".$pedido->numero.$descricaoNome,
 						'estornado'      => '1'
 					]);
 			} else {

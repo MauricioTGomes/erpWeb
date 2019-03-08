@@ -10,7 +10,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="token" content="{{ csrf_token() }}">
-    <title>Nome do | Software</title>
+    <title>Men Store | MS</title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="stylesheet" href="{{ asset('/layout/bower_components/bootstrap/dist/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
@@ -29,15 +29,16 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <header class="main-header">
 
         <!-- Logo -->
-        <a href="#" class="logo">
-            <!-- mini logo for sidebar mini 50x50 pixels -->
-            <span class="logo-mini"><b>A</b>LT</span>
-            <!-- logo for regular state and mobile devices -->
-            <span class="logo-lg"><b>Nome do </b>SOFTWARE</span>
+        <a href="{{ route('index') }}" class="logo">
+            <span class="logo-lg"><b>Men Store </b>MS</span>
         </a>
 
         <!-- Header Navbar -->
         <nav class="navbar navbar-static-top" role="navigation">
+            <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+                <span class="sr-only">Reduzir</span>
+            </a>
+
             <div class="navbar-custom-menu">
                 <ul class="nav navbar-nav">
 
@@ -55,7 +56,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
               </li>
               <li class="user-footer">
                 <div class="pull-left">
-                  <a href="{{ route('alterar.usuario', Auth::user()->id) }}" class="btn btn-default btn-flat">Profile</a>
+                  <a href="{{ route('alterar.usuario', Auth::user()->id) }}" class="btn btn-default btn-flat">Editar usuário</a>
                 </div>
                 <div class="pull-right">
                   <a href="{{ route('logout') }}" class="btn btn-default btn-flat">Sair</a>
@@ -74,14 +75,19 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <ul class="sidebar-menu" data-widget="tree">
                 <li class="header">Menu</li>
 
-                <li class="{{str_contains(Request::path(),['pessoas', 'produtos'])?'active':''}} treeview">
+                <li class="{{str_contains(Request::path(),['auth', 'pessoas', 'produtos'])?'active':''}} treeview">
                     <a href=""><i class="fa fa-wrench  sidebar-nav-icon"></i> <span>Manutenção</span>
                         <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
                     </a>
 
                     <ul class="treeview-menu">
+                        @if(auth()->user()->tipo == 'gerente')
+                        <li>
+                            <a href="{{ route('listar.usuario') }}"><i class="fa fa-user"></i> Controle de usuário</a>
+                        </li>
+                        @endif
                         <li class="{{str_contains(Request::path(),['pessoas'])?'active':''}} treeview">
-                            <a href="#"><i class="fa fa-user sidebar-nav-icon"></i> Pessoas
+                            <a href="#"><i class="fa fa-users sidebar-nav-icon"></i> Pessoas
                                 <span class="pull-right-container"><i
                                             class="fa fa-angle-left pull-right"></i></span>
                             </a>
@@ -91,7 +97,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             </ul>
                         </li>
                         <li class="{{str_contains(Request::path(),['produtos'])?'active':''}} treeview">
-                            <a href="#"><i class="fa fa-user sidebar-nav-icon"></i> Produto
+                            <a href="#"><i class="fa fa-archive sidebar-nav-icon"></i> Produto
                                 <span class="pull-right-container"><i
                                             class="fa fa-angle-left pull-right"></i></span>
                             </a>
@@ -156,16 +162,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             <li>
                                 <a href="{{ route('movimentacao.listar') }}"><i class="fa fa-circle-o"></i> Controle de caixa</a>
                             </li>
+                            <li>
+                                <a href="{{ route('relatorio.contas') }}"><i class="fa fa-file-text-o"></i> Relatório de contas</a>
+                            </li>
                         @endif
                     </ul>
                 </li>
 
                 @if(Auth::user()->tipo == 'gerente')
-                    <li><a href="{{ route('cadastrar.usuario') }}"><i class="fa fa-book"></i>
-                            <span>Cadastro de usuários</span></a>
-                    </li>
-
-                    <li><a href="{{ route('relatorio.comissao') }}"><i class="fa fa-book"></i>
+                    <li><a href="{{ route('relatorio.comissao') }}"><i class="fa fa-file-text-o"></i>
                             <span>Relatório comissões</span></a>
                     </li>
                 @endif
@@ -268,7 +273,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
             $('.select2').select2({
                 width: '95%',
                 allow_single_deselect: true,
-                placeholder: "Seleciona uma opção."
+                placeholder: "Seleciona uma opção.",
+                language: 'pt-br',
             });
         });
     </script>

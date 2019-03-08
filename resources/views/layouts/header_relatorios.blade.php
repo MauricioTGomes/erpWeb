@@ -19,7 +19,7 @@
     <header>
         <div class="col-xs-12">
             <div class="row text-left">
-                <div class="col-xs-12 cabecalho titulo">Loja de roupa</div>
+                <div class="col-xs-12 cabecalho titulo">Men Store MS</div>
             </div>
             <div class="row text-left cabecalho empresa">
                 <div class="col-xs-6"><b>CNPJ: 05.234.231-0001/32</b></div>

@@ -4,6 +4,7 @@ namespace App;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Parcela extends Model {
 
@@ -11,6 +12,7 @@ class Parcela extends Model {
 		'nro_parcela',
 		'valor',
 		'valor_pago',
+		'valor_original',
 		'data_vencimento',
 		'data_recebimento',
 		'valor_desconto',
@@ -34,9 +36,22 @@ class Parcela extends Model {
 		}
 	}
 
+	public function getTotalDia($tipo, $dia) {
+		$query = $this->newQuery();
+		$query->join('contas_receber_pagar as conta', 'conta.id', '=', 'parcelas_receber_pagar.conta_id')
+		      ->where('tipo_operacao', $tipo)
+		      ->where('data_vencimento', '<=', DB::raw("'$dia'"))
+		      ->where('baixada', '0');
+		return $query->with('conta')->get();
+	}
+
 	public function getDataVencimentoAttribute($value) {
 		if (strlen($value) > 0) {
-			return (new Carbon($value))->format('d/m/Y');
+			try {
+				return (new Carbon($value))->format('d/m/Y');
+			} catch (\Exception $e) {
+				return $value;
+			}
 		} else {
 			return null;
 		}

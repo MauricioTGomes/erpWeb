@@ -1,5 +1,9 @@
-<div class="w3-container w3-light-grey">
-    <div class="row">
+<div class="box box-default">
+        <div class="box-header with-border">
+            <h5 class="box-title">Dados</h5>
+        </div>
+        <div class="box-body">
+            <div class="row">
         <div class="col-sm-4">
             <label for="ativo">Ativo <i class="text-danger" title="Campo obrigatório">*</i></label>
             <div class="form-group">
@@ -36,9 +40,16 @@
             </div>
         </div>
     </div>
+        </div>
+    </div>
 
-    <h3>Estoque</h3>
-    <div class="row">
+
+    <div class="box box-default">
+        <div class="box-header with-border">
+            <h5 class="box-title">Estoque</h5>
+        </div>
+        <div class="box-body">
+            <div class="row">
         <div class="col-sm-4">
             <div class="form-group">
                 <label for="qtd_estoque">Quantidade em estoque<i class="text-danger" title="campo obrigatório">*</i></label>
@@ -70,6 +81,8 @@
             </div>
         </div>
     </div>
-</div>
+        </div>
+    </div>
+
 <script src="{{ elixir('js/jquery-2.2.0.min.js') }}"></script>
 <script src="{{ elixir('js/app.js') }}"></script>
