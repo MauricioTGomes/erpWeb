@@ -29,7 +29,7 @@ class CreatePedidoTable extends Migration {
         });
 
         Schema::table('pedidos', function (Blueprint $table) {
-            $table->foreign('pessoa_id')->references('id')->on('pessoas');
+            $table->foreign('pessoa_id')->references('id')->on('pessoa');
             $table->foreign('conta_id')->references('id')->on('contas_receber_pagar')
                 ->onDelete('cascade');
             $table->foreign('user_abertura_id')->references('id')->on('users');

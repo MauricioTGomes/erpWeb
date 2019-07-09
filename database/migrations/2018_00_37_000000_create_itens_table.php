@@ -23,7 +23,7 @@ class CreateItensTable extends Migration {
         });
 
         Schema::table('itens', function (Blueprint $table) {
-            $table->foreign('produto_id')->references('id')->on('produtos');
+            $table->foreign('produto_id')->references('id')->on('produto');
             $table->foreign('pedido_id')->references('id')->on('pedidos');
         });
     }

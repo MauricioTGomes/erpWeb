@@ -27,7 +27,7 @@ class CreateContasReceberPagarsTable extends Migration {
         });
 
         Schema::table('contas_receber_pagar', function ($table) {
-            $table->foreign('pessoa_id')->references('id')->on('pessoas');
+            $table->foreign('pessoa_id')->references('id')->on('pessoa');
             $table->foreign('user_id')->references('id')->on('users');
         });
     }
