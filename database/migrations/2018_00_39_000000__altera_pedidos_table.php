@@ -3,16 +3,15 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AlteraContasReceberPagarsTable extends Migration {
+class AlteraPedidosTable extends Migration {
     /**
      * Run the migrations.
      *
      * @return void
      */
     public function up() {
-        Schema::table('contas_receber_pagar', function ($table) {
-            $table->integer('pedido_id')->unsigned();
-            $table->foreign('pedido_id')->references('id')->on('pedidos');
+        Schema::table('pedidos', function ($table) {
+            $table->enum('estornado', ['0', '1'])->nullable()->default('0');
         });
     }
 
@@ -22,6 +21,8 @@ class AlteraContasReceberPagarsTable extends Migration {
      * @return void
      */
     public function down() {
-        Schema::drop('contas_receber_pagar');
+        Schema::table('users', function ($table) {
+            $table->dropColumn('estornado');
+        });
     }
 }

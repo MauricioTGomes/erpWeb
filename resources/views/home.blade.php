@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('conteudo')
-
-@if (auth()->user()->tipo == 'gerente')
+{{--
+@if (auth()->user()->tipo == 'GERENTE')
 <div class="col-lg-12 col-xs-12">
     <div class="small-box bg-red">
         <div class="inner">
@@ -45,6 +45,6 @@
             Ver mais <i class="fa fa-arrow-circle-right"></i>
         </a>
     </div>
-</dCliente>
-
+</div>
+--}}
 @endsection

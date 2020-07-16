@@ -81,7 +81,7 @@ class ContaController extends Controller {
 	}
 
 	public function listarPagar() {
-		if (Auth::user()  ->tipo != 'gerente') {
+		if (Auth::user()  ->tipo != 'GERENTE') {
 			return redirect()->route('index')->with(['erro' => "Seu usuário não tem permissão para acessar esta área"]);
 		}
 		SEOTools::setTitle('Listagem de conta a pagar');
@@ -101,7 +101,7 @@ class ContaController extends Controller {
 	}
 
 	public function getFormAdicionarPagar() {
-		if (Auth::user()  ->tipo != 'gerente') {
+		if (Auth::user()->tipo != 'GERENTE') {
 			return redirect()->route('index')->with(['erro' => "Seu usuário não tem permissão para acessar esta área"]);
 		}
 
@@ -177,7 +177,7 @@ class ContaController extends Controller {
 		try {
 			$conta = $this->contaModel->find($id);
 
-			if (Auth::user()->tipo != 'gerente' && $conta->tipo == 'P') {
+			if (Auth::user()->tipo != 'GERENTE' && $conta->tipo == 'P') {
 				return redirect()->route('index')->with(['erro' => "Seu usuário não tem permissão para 	acessar esta área"]);
 			}
 
@@ -198,7 +198,7 @@ class ContaController extends Controller {
 		try {
 			$conta = $this->contaModel->find($id);
 
-			if (Auth::user()->tipo != 'gerente' && $conta->tipo == 'P') {
+			if (Auth::user()->tipo != 'GERENTE' && $conta->tipo == 'P') {
 				return redirect()->route('index')->with(['erro' => "Seu usuário não tem permissão para 	acessar esta área"]);
 			}
 

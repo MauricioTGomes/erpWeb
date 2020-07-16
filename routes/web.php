@@ -25,7 +25,7 @@ Route::group(['where'                     => ['id'                     => '[0-9]
 				Route::post('/register', ['as'        => 'gravar.usuario', 'uses'        => 'IndexController@create']);
 				Route::post('/update/{id}', ['as'     => 'update.usuario', 'uses'     => 'IndexController@update']);
 				Route::post('/deletar/{id}', ['as'    => 'deletar.usuario', 'uses'    => 'IndexController@deletaUser']);
-				Route::get('/listar/datatable', ['as' => 'listar.datatable', 'uses' => 'IndexController@datatableAjax']);
+				Route::get('/listar/datatable', ['as' => 'datatable.usuario', 'uses' => 'IndexController@datatableAjax']);
 			});
 
 		Route::group(['prefix'                    => 'pessoas'], function () {

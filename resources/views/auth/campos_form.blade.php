@@ -3,7 +3,7 @@
             <input type="text" class="form-control" placeholder="Nome completo" name="name"password2 value="{{ isset($user) ? $user->name : null }}">
             <span class="glyphicon glyphicon-user form-control-feedback"></span>
         </div>
-        @if(auth()->user()->tipo == 'gerente')
+        @if(auth()->user()->tipo == 'GERENTE')
         <div class="form-group has-feedback">
             <input type="text" class="form-control input-positive" placeholder="Porcentagem de comissão" name="porcentagem_comissao" value="{{ isset($user) ? $user->porcentagem_comissao : null }}">
             <span class="glyphicon glyphicon-user form-control-feedback"></span>
@@ -38,12 +38,12 @@
         </div>
         @endif
 
-        @if(auth()->user()->tipo == 'gerente')
+        @if(auth()->user()->tipo == 'GERENTE')
         <label class="form-group has-feedback col-xs-12">
             <span class="block input-icon input-icon-right">
             <select class="form-control select2" name="tipo">
-            <option {{ isset($user) && $user->tipo == 'vendedor' ? 'selected' : ''}} value="vendedor">Vendedor</option>
-            <option {{ isset($user) && $user->tipo == 'gerente' ? 'selected' : ''}} value="gerente">Gerente</option>
+            <option {{ isset($user) && $user->tipo == 'VENDEDOR' ? 'selected' : ''}} value="vendedor">Vendedor</option>
+            <option {{ isset($user) && $user->tipo == 'GERENTE' ? 'selected' : ''}} value="gerente">Gerente</option>
             </select>
             </span>
         </label>

@@ -42,7 +42,7 @@ class IndexController extends Controller {
 		SEOTools::setTitle('Alterar dados');
 		try {
 			$user = User::find($id);
-			if (auth()->user()->tipo != 'gerente' && $user->id != auth()->user()->id) {
+			if (auth()->user()->tipo != 'GERENTE' && $user->id != auth()->user()->id) {
 				throw new Exception("usuário com movimentação financeira, não é possível elimina-lo");
 			}
 			return view('auth/alterar', compact('user'));
@@ -162,7 +162,7 @@ class IndexController extends Controller {
 				return $registro->porcentagem_comissao;
 			})
 			->editColumn('tipo', function ($registro) {
-				return $registro->tipo;
+				return $registro->tipo == 'GERENTE' ? 'Gerente' : 'Vendedor';
 			})
 			->addColumn('action', function ($registro) {
 				return '    <a a-href="/auth/deletar/'.$registro->id.'" title="Excluir"

@@ -49,7 +49,7 @@ class MovimentacaoController extends Controller {
 	}
 
 	public function listar() {
-		if (Auth::user()  ->tipo != 'gerente') {
+		if (Auth::user()->tipo != 'GERENTE') {
 			return redirect()->route('index')->with(['erro' => "Seu usuário não tem permissão para acessar esta área"]);
 		}
 		SEOTools::setTitle('Controle de caixa');
@@ -86,7 +86,7 @@ class MovimentacaoController extends Controller {
 	}
 
 	public function getFormIncluir() {
-		if (Auth::user()  ->tipo != 'gerente') {
+		if (Auth::user()->tipo != 'GERENTE') {
 			return redirect()->route('index')->with(['erro' => "Seu usuário não tem permissão para acessar esta área"]);
 		}
 
